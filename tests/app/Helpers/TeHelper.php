@@ -62,5 +62,76 @@ class TeHelper
 
     }
 
+    public function willExpireAtTestOne()
+    {
+        try {
+            
+            self::willExpireAt();
+
+
+        } catch (\Throwable $th) {
+            throw $th;
+            return back()->withErrors($th->getMessageBag());
+        }
+    }
+
+    public function willExpireAtTestTwo()
+    {
+        try {
+            $due_time = '10:20:00';
+
+            self::willExpireAt($due_time);
+
+
+        } catch (\Throwable $th) {
+            throw $th;
+            return back()->withErrors($th->getMessageBag());
+        }
+    }
+
+    
+    public function willExpireAtTestThree()
+    {
+        try {
+            $created_at = '10:20:00';
+
+            self::willExpireAt(null, $created_at);
+
+
+        } catch (\Throwable $th) {
+            throw $th;
+            return back()->withErrors($th->getMessageBag());
+        }
+    }
+
+    public function willExpireAtTestFour()
+    {
+        try {
+            $created_at = 'SomeTestPhrase'; // can't be parsed with Carbon;
+
+            self::willExpireAt(null, $created_at);
+
+
+        } catch (\Throwable $th) {
+            throw $th;
+            return back()->withErrors($th->getMessageBag());
+        }
+    }
+
+    public function willExpireAtTestNormal()
+    {
+        try {
+            $created_at = Carbon::now(); // can't be parsed with Carbon;
+            $due_time = Carbon::now()->addDays(2);
+
+            self::willExpireAt($due_time, $created_at);
+
+
+        } catch (\Throwable $th) {
+            throw $th;
+            return back()->withErrors($th->getMessageBag());
+        }
+    }
+
 }
 

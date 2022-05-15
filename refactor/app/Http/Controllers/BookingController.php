@@ -7,6 +7,7 @@ use DTApi\Http\Requests;
 use DTApi\Models\Distance;
 use Illuminate\Http\Request;
 use DTApi\Repository\BookingRepository;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * Class BookingController
@@ -35,14 +36,21 @@ class BookingController extends Controller
      */
     public function index(Request $request)
     {
+        // declaring variables on top
+        $user_id;
+        $response; // declaring this here because it would've thrown error in-case $request is null. 
+
         if($user_id = $request->get('user_id')) {
 
             $response = $this->repository->getUsersJobs($user_id);
 
-        }
+        } 
         elseif($request->__authenticatedUser->user_type == env('ADMIN_ROLE_ID') || $request->__authenticatedUser->user_type == env('SUPERADMIN_ROLE_ID'))
         {
             $response = $this->repository->getAll($request);
+        } else {
+            // since I don't see a middleware, i will assume the control can land here.
+            return response()->json(['message' => 'Please add requirement params'], 422);
         }
 
         return response($response);
@@ -54,7 +62,15 @@ class BookingController extends Controller
      */
     public function show($id)
     {
-        $job = $this->repository->with('translatorJobRel.user')->find($id);
+        // either use a validator here or just write a conditional statement;
+        // usually ID's are of type integer;
+        if (gettype($id) == 'integer') {
+            $job = $this->repository->with('translatorJobRel.user')->find($id);
+        } else {
+            return response()->json(['message' => 'Please add an integer id'], 422);
+        }
+
+        if (!$job) return response()->json(['message' => 'User not found'], 404);
 
         return response($job);
     }
@@ -65,6 +81,7 @@ class BookingController extends Controller
      */
     public function store(Request $request)
     {
+        // I would use a validator here or laravel's validator factory to validate the request.
         $data = $request->all();
 
         $response = $this->repository->store($request->__authenticatedUser, $data);
@@ -95,6 +112,8 @@ class BookingController extends Controller
     {
         $adminSenderEmail = config('app.adminemail');
         $data = $request->all();
+
+        // validator missing;
 
         $response = $this->repository->storeJobEmail($data);
 

@@ -1,11 +1,3 @@
-Choose ONE of the following tasks.
-Please do not invest more than 2-4 hours on this.
-Upload your results to a Github repo, for easier sharing and reviewing.
-
-Thank you and good luck!
-
-
-
 Code to refactor
 =================
 1) app/Http/Controllers/BookingController.php
@@ -19,27 +11,32 @@ Code to write tests
 
 ----------------------------
 
-What I expect in your repo:
+# Formatting
 
-X. A readme with:   Your thoughts about the code. What makes it amazing code. Or what makes it ok code. Or what makes it terrible code. How would you have done it. Thoughts on formatting, structure, logic.. The more details that you can provide about the code (what's terrible about it or/and what is good about it) the easier for us to assess your coding style, mentality etc
+## BookingController
 
-And 
+- Variable should be declared on top of method. Easier to locate them later when working on the method again sometime.
 
-Y.  Refactor it if you feel it needs refactoring. The more love you put into it. The easier for us to asses your thoughts, code principles etc
+## BookingRepository
+
+- Variables should be declared on top of method
+- Method decorators should have proper post doc. In my current company, we do this to identify the type of variable and payload;
+- The Code isn't readable and it takes quite some time to make sense of it. Dozens of if statements, why are you using a single array to filter out that many things.
+- Why not just use different objects for conditional statements? 
+- in_array contains time_complexity of O(n). that will significantly slow down the process.
+
+# Refactoring
+
+## BookingController
+
+- Missing validators in whole code;
+- Not sure how they are doing exception handling, I would assume they're handling it through routes.
+
+#logic
+
+## BookingController
+
+- Repository Pattern is being used here, logically, controller looks fine but I would try to limit the number of loops
 
 
-IMPORTANT: Make two commits. First commit with original code. Second with your refactor so we can easily trace changes. 
-
-
-NB: you do not need to set up the code on local and make the web app run. It will not run as its not a complete web app. This is purely to assess you thoughts about code, formatting, logic etc
-
-
-===== So expected output is a GitHub link with either =====
-
-1. Readme described above (point X above) + refactored code 
-OR
-2. Readme described above (point X above) + a unit test of the code that we have sent
-
-Thank you!
-
-
+# Tests

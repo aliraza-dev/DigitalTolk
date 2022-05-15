@@ -231,5 +231,109 @@ class UserRepository extends BaseRepository
     {
         return User::where('user_type', 2)->get();
     }
+
+    public function testCreateOrUpdate ()
+    {
+        try {
+            // call the method without params and check if it works, I am not sure what library are you guys using.
+            // For the record, I am used to use selenium web driver to do system testing and capture-replay to do unit testing.
+            // not sure which coverage criteria is being used by your company.
+
+            $this->createOrUpdate();
+            
+        } catch( \Exception $ex) {
+            return back()->withErrors($ex->getMessageBag());
+        }
+    }
+
+    // @before
+
+    public function testDriversForCreateOrUpdate()
+    {
+        // drivers;
+        $request = array();
+        $request['role'] = 'TRANSLATOR_ROLE_ID';
+        $request['name'] = "Josephina";
+        $request['company_id'] = '2';
+        $request['department_id'] = '4';
+        $request['email'] = 'dummy';
+        $request['dob_or_orgid'] = '12';
+        $request['phone'] = '151215125125';
+        $request['mobile'] = '12941924912';
+
+        return $request;
+
+    }
+
+    public function testCreateOrUpdateWithParams ()
+    {
+        try {
+            // call the method without params and check if it works, I am not sure what library are you guys using.
+            // For the record, I am used to use selenium web driver to do system testing and capture-replay to do unit testing.
+            // not sure which coverage criteria is being used by your company.
+            
+            $request = $this->testDriversForCreateOrUpdate();
+
+            return $this->createOrUpdate(null, $request);
+            
+        } catch( \Exception $ex) {
+            return back()->withErrors($ex->getMessageBag());
+        }
+
+    }
+
+    public function testCreateOrUpdateWithRoleOne ()
+    {
+        try {
+            
+            $request = $this->testDriversForCreateOrUpdate();
+            $request['role'] = 'CUSTOMER_ROLE_ID';
+
+            $this->createOrUpdate(null, $request);
+            
+        } catch( \Exception $ex) {
+            return back()->withErrors($ex->getMessageBag());
+        }
+
+    }
+
+    public function testCreateOrUpdateWithRoleTwo ()
+    {
+        try {
+            
+            $request = $this->testDriversForCreateOrUpdate();
+            $request['role'] = 'TRANSLATOR_ROLE_ID';
+
+            return $this->createOrUpdate(null, $request);
+            
+        } catch( \Exception $ex) {
+            return back()->withErrors($ex->getMessageBag());
+        }
+
+    }
+
+    public function testCreateOrUpdateNullData ()
+    {
+        try {
+            
+            $request = $this->testDriversForCreateOrUpdate();
+            $request['role'] = 'TRANSLATOR_ROLE_ID';
+
+            $request['role'] = 'TRANSLATOR_ROLE_ID';
+            $request['name'] = "";
+            $request['company_id'] = '';
+            $request['department_id'] = '4';
+            $request['email'] = '';
+            $request['dob_or_orgid'] = '';
+            $request['phone'] = '';
+            $request['mobile'] = '';
+
+            return $this->createOrUpdate(null, $request);
+            
+        } catch( \Exception $ex) {
+            return back()->withErrors($ex->getMessageBag());
+        }
+
+    }
     
 }

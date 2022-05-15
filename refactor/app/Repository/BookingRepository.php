@@ -140,27 +140,25 @@ class BookingRepository extends BaseRepository
                 return $response;
             }
             if ($data['immediate'] == 'no') {
+
+                // how are you determining the order? shouldn't the response be at the end, what if the response
+                // satisfies other conditions as well, or it should be elseif
+                $response['status'] = 'fail';
+                $response['message'] = "Du måste fylla in alla fält";
+
                 if (isset($data['due_date']) && $data['due_date'] == '') {
-                    $response['status'] = 'fail';
-                    $response['message'] = "Du måste fylla in alla fält";
                     $response['field_name'] = "due_date";
                     return $response;
                 }
                 if (isset($data['due_time']) && $data['due_time'] == '') {
-                    $response['status'] = 'fail';
-                    $response['message'] = "Du måste fylla in alla fält";
                     $response['field_name'] = "due_time";
                     return $response;
                 }
                 if (!isset($data['customer_phone_type']) && !isset($data['customer_physical_type'])) {
-                    $response['status'] = 'fail';
-                    $response['message'] = "Du måste göra ett val här";
                     $response['field_name'] = "customer_phone_type";
                     return $response;
                 }
                 if (isset($data['duration']) && $data['duration'] == '') {
-                    $response['status'] = 'fail';
-                    $response['message'] = "Du måste fylla in alla fält";
                     $response['field_name'] = "duration";
                     return $response;
                 }
@@ -479,12 +477,12 @@ class BookingRepository extends BaseRepository
      */
     public function sendNotificationTranslator($job, $data = [], $exclude_user_id)
     {
-        $users = User::all();
+        $users = User::where('user_type', 2)->where('status', '1')->whereNot('id', $exclude_user_id)->get();
         $translator_array = array();            // suitable translators (no need to delay push)
         $delpay_translator_array = array();     // suitable translators (need to delay push)
 
-        foreach ($users as $oneUser) {
-            if ($oneUser->user_type == '2' && $oneUser->status == '1' && $oneUser->id != $exclude_user_id) { // user is translator and he is not disabled
+        foreach ($users as $oneUser) { // Why not just get user having status 1 and type 2.
+            // if ($oneUser->user_type == '2' && $oneUser->status == '1' && $oneUser->id != $exclude_user_id) { // user is translator and he is not disabled
                 if (!$this->isNeedToSendPush($oneUser->id)) continue;
                 $not_get_emergency = TeHelper::getUsermeta($oneUser->id, 'not_get_emergency');
                 if ($data['immediate'] == 'yes' && $not_get_emergency == 'yes') continue;
@@ -505,7 +503,7 @@ class BookingRepository extends BaseRepository
                         }
                     }
                 }
-            }
+            // }
         }
         $data['language'] = TeHelper::fetchLanguageFromJobId($data['from_language_id']);
         $data['notification_type'] = 'suitable_job';
@@ -788,6 +786,7 @@ class BookingRepository extends BaseRepository
             if ($changeDue['dateChanged']) $this->sendChangedDateNotification($job, $old_time);
             if ($changeTranslator['translatorChanged']) $this->sendChangedTranslatorNotification($job, $current_translator, $changeTranslator['new_translator']);
             if ($langChanged) $this->sendChangedLangNotification($job, $old_lang);
+            return ['Updated'];
         }
     }
 
